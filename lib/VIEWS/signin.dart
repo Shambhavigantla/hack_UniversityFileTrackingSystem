@@ -1,9 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:naradaflow/CONTAINER/login_controller.dart';
+import 'package:naradaflow/CONTROLLERS/login_controller.dart';
 import 'package:naradaflow/Responsiveness.dart';
 
 class SignInScreen extends StatelessWidget {
@@ -34,18 +35,18 @@ class SignInScreen extends StatelessWidget {
             ),
           ),
           // Content
-          Column(
-            children: [
-              const SizedBox(height: 20),
-              SafeArea(
-                minimum: EdgeInsets.all(size.height * 0.1),
-                child: Responsive(
-                  mobile: _buildMobileLayout(context),
-                  tablet: _buildTabletLayout(context),
-                  desktop: _buildDesktopLayout(context),
+          SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                SafeArea(
+                  minimum: EdgeInsets.all(size.height * 0.1),
+                  child: Responsive(
+                    mobile: _buildMobileLayout(context),
+                    tablet: _buildTabletLayout(context),
+                    desktop: _buildDesktopLayout(context),
+                  ),
                 ),
-              ),
-              if (size.width > 850)
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(8.0),
@@ -67,7 +68,8 @@ class SignInScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
