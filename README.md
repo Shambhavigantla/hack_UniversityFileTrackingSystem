@@ -62,6 +62,5 @@ This project is a cross-platform application built using the Flutter framework. 
 ## Media
 
 ### Screenshots
-````[](https://drive.google.com/drive/folders/1izW4sXJtk-D2cAWu1rEaA7X7WG-DABrt)````
+
 ### Video
-[](https://drive.google.com/drive/folders/1izW4sXJtk-D2cAWu1rEaA7X7WG-DABrt)
