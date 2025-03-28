@@ -4,8 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
-import 'package:naradaflow/CONTROLLERS/login_controller.dart';
-import 'package:naradaflow/Responsiveness.dart';
+import 'package:vector/CONTROLLERS/login_controller.dart';
+import 'package:vector/Responsiveness.dart';
+import 'package:vector/views/admin_dashboard.dart';
 
 class SignInScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -23,7 +24,7 @@ class SignInScreen extends StatelessWidget {
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assests/Icons/6JUNE1-1170x700.jpg'),
+                image: AssetImage('assets/uni.jpeg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -122,7 +123,7 @@ class SignInScreen extends StatelessWidget {
       children: [
         ClipOval(
           child: Image.asset(
-            "assests/images/Pondy_Univ_logo1.jpg",
+            "assets/images/Pondy_Univ_logo1.jpg",
             height: isSmallScreen ? 80 : 100,
             width: isSmallScreen ? 80 : 100,
             fit: BoxFit.cover,
@@ -251,6 +252,13 @@ class SignInScreen extends StatelessWidget {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
                 controller.login();
+
+                // Navigate to Admin Dashboard
+                if (controller.loginId.value == 'admin' && controller.password.value == 'admin123') {
+                  Get.to(() => const AdminDashboard());
+                } else {
+                  controller.error.value = 'Invalid credentials';
+                }
               }
             },
             style: ElevatedButton.styleFrom(

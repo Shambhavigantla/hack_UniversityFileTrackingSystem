@@ -6,6 +6,7 @@ class LoginController extends GetxController {
   final loginId = ''.obs; // This can be either email or username
   final password = ''.obs;
   final error = ''.obs;
+  UserModel? user; // Nullable UserModel
 
   void login() {
     if (loginId.value == 'admin' && password.value == 'admin123') {

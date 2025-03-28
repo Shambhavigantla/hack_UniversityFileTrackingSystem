@@ -1,9 +1,9 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:naradaflow/VIEWS/signin.dart';
-import 'package:naradaflow/views/admin_dashboard.dart';
-import 'package:naradaflow/views/user_dashboard.dart';
+import 'package:vector/VIEWS/signin.dart';
+import 'package:vector/views/admin_dashboard.dart';
+import 'package:vector/views/user_dashboard.dart';
 
 void main() {
   runApp(const MyApp());
