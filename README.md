@@ -8,6 +8,7 @@ This project is a cross-platform application built using the Flutter framework. 
 
 - **Framework:** Flutter (supports web, Android, and iOS applications)
 - **IDE:** VSCodium
+- **Design & Prototyping Tools:** penpot (Open source design tool)
 
 ## Packages Used
 

@@ -255,7 +255,7 @@ class SignInScreen extends StatelessWidget {
 
                 // Navigate to Admin Dashboard
                 if (controller.loginId.value == 'admin' && controller.password.value == 'admin123') {
-                  Get.to(() => const AdminDashboard());
+                  Get.to(() => AdminDashboard());
                 } else {
                   controller.error.value = 'Invalid credentials';
                 }

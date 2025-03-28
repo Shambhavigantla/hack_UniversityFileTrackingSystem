@@ -1,8 +1,8 @@
 // lib/views/admin_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../models/user_model.dart';
-import '../Responsiveness.dart';
+import 'package:vector/CONTROLLERS/request_controller.dart';
+import 'package:vector/MODELS/request_model.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({Key? key}) : super(key: key);
@@ -12,6 +12,7 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
+  final RequestController controller = Get.put(RequestController());
   bool isSidebarOpen = true; // Controls the sidebar state
   String selectedOption = 'Dashboard'; // Tracks the selected option
 
@@ -19,23 +20,29 @@ class _AdminDashboardState extends State<AdminDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Admin',
-          style: TextStyle(color: Colors.green), // Text color in green
+        automaticallyImplyLeading: false, // Removes the back arrow
+        title: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.menu, color: Colors.green),
+              onPressed: () {
+                setState(() {
+                  isSidebarOpen = !isSidebarOpen; // Toggle sidebar state
+                });
+              },
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'Admin',
+              style: TextStyle(color: Colors.green, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
         backgroundColor: const Color(0xFFE8F5E9), // Same color as sidebar
         elevation: 4.0, // Adds shadow under the AppBar
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.green), // Icon color in green
-          onPressed: () {
-            setState(() {
-              isSidebarOpen = !isSidebarOpen; // Toggle sidebar state
-            });
-          },
-        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.green), // Icon color in green
+            icon: const Icon(Icons.notifications, color: Colors.green),
             onPressed: () {
               // Handle notifications
             },
@@ -47,126 +54,38 @@ class _AdminDashboardState extends State<AdminDashboard> {
           const SizedBox(width: 16),
         ],
       ),
-      body: Responsive(
-        mobile: _buildMobileLayout(),
-        tablet: _buildTabletLayout(),
-        desktop: _buildDesktopLayout(),
-      ),
-    );
-  }
-
-  // Mobile Layout
-  Widget _buildMobileLayout() {
-    return Stack(
-      children: [
-        // Main Content
-        Container(
-          color: Colors.white,
-          child: Center(
-            child: Text(
-              'Mobile View: $selectedOption',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+      body: Row(
+        children: [
+          // Sidebar
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: isSidebarOpen ? 200 : 0, // Sidebar width
+            color: const Color(0xFFE8F5E9),
+            child: isSidebarOpen
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      _buildSidebarOption('Dashboard', Icons.dashboard),
+                      _buildSidebarOption('Requests', Icons.request_page),
+                      _buildSidebarOption('Department', Icons.apartment),
+                    ],
+                  )
+                : null,
           ),
-        ),
-        // Sidebar Overlay
-        if (isSidebarOpen)
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            child: Container(
-              width: 200,
-              color: const Color(0xFFE8F5E9),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  _buildSidebarOption('Dashboard', Icons.dashboard),
-                  _buildSidebarOption('Requests', Icons.request_page),
-                  _buildSidebarOption('Department', Icons.apartment),
-                  const Spacer(),
-                  IconButton(
-                    icon: const Icon(Icons.close, color: Colors.green),
-                    onPressed: () {
-                      setState(() {
-                        isSidebarOpen = false; // Close the sidebar
-                      });
-                    },
+          // Main Content
+          Expanded(
+            child: selectedOption == 'Requests'
+                ? _buildRequestsPage()
+                : Center(
+                    child: Text(
+                      '$selectedOption Page',
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ],
-              ),
-            ),
           ),
-      ],
-    );
-  }
-
-  // Tablet Layout
-  Widget _buildTabletLayout() {
-    return Row(
-      children: [
-        // Sidebar
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          width: isSidebarOpen ? 150 : 0, // Adjust width dynamically
-          color: const Color(0xFFE8F5E9),
-          child: isSidebarOpen
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    _buildSidebarOption('Dashboard', Icons.dashboard),
-                    _buildSidebarOption('Requests', Icons.request_page),
-                    _buildSidebarOption('Department', Icons.apartment),
-                  ],
-                )
-              : null,
-        ),
-        // Main Content
-        Expanded(
-          child: Center(
-            child: Text(
-              'Tablet View: $selectedOption',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  // Desktop Layout
-  Widget _buildDesktopLayout() {
-    return Row(
-      children: [
-        // Sidebar
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          width: isSidebarOpen ? 200 : 0, // Adjust width dynamically
-          color: const Color(0xFFE8F5E9),
-          child: isSidebarOpen
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 16),
-                    _buildSidebarOption('Dashboard', Icons.dashboard),
-                    _buildSidebarOption('Requests', Icons.request_page),
-                    _buildSidebarOption('Department', Icons.apartment),
-                  ],
-                )
-              : null,
-        ),
-        // Main Content
-        Expanded(
-          child: Center(
-            child: Text(
-              'Desktop View: $selectedOption',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -176,9 +95,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
       onTap: () {
         setState(() {
           selectedOption = title; // Update selected option
-          if (Responsive.isMobile(context)) {
-            isSidebarOpen = false; // Close sidebar on mobile after selection
-          }
         });
       },
       child: Padding(
@@ -198,6 +114,208 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ],
         ),
       ),
+    );
+  }
+
+  // Requests Page with Tabs
+  Widget _buildRequestsPage() {
+    return DefaultTabController(
+      length: 4,
+      child: Column(
+        children: [
+          Container(
+            color: const Color(0xFFE8F5E9), // Sidebar color for tabs
+            child: const TabBar(
+              labelColor: Colors.green,
+              unselectedLabelColor: Colors.black,
+              indicatorColor: Colors.green,
+              tabs: [
+                Tab(text: 'Current'),
+                Tab(text: 'Pending'),
+                Tab(text: 'Completed'),
+                Tab(text: 'Rejected'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              children: [
+                _buildCurrentRequestsTable(),
+                _buildPendingRequestsTable(),
+                _buildCompletedRequestsTable(),
+                _buildRejectedRequestsTable(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Current Requests Table
+  Widget _buildCurrentRequestsTable() {
+    return Obx(() => Container(
+          color: const Color(0xFFE8F5E9),
+          padding: const EdgeInsets.all(16.0),
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('No')),
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('regNo')),
+              DataColumn(label: Text('Doc_requested')),
+              DataColumn(label: Text('Status')),
+            ],
+            rows: controller.currentRequests.map((request) {
+              return DataRow(cells: [
+                DataCell(Text(request.no)),
+                DataCell(Text(request.name)),
+                DataCell(Text(request.regNo)),
+                DataCell(Text(request.docRequested)),
+                DataCell(Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        controller.acceptRequest(request);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
+                      child: const Text('Accept'),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        _showRejectDialog(request);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      child: const Text('Reject'),
+                    ),
+                  ],
+                )),
+              ]);
+            }).toList(),
+          ),
+        ));
+  }
+
+  // Pending Requests Table
+  Widget _buildPendingRequestsTable() {
+    return Obx(() => Container(
+          color: const Color(0xFFE8F5E9),
+          padding: const EdgeInsets.all(16.0),
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('No')),
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('regNo')),
+              DataColumn(label: Text('Doc_requested')),
+            ],
+            rows: controller.pendingRequests.map((request) {
+              return DataRow(cells: [
+                DataCell(Text(request.no)),
+                DataCell(Text(request.name)),
+                DataCell(Text(request.regNo)),
+                DataCell(Text(request.docRequested)),
+              ]);
+            }).toList(),
+          ),
+        ));
+  }
+
+  // Completed Requests Table
+  Widget _buildCompletedRequestsTable() {
+    return Obx(() => Container(
+          color: const Color(0xFFE8F5E9),
+          padding: const EdgeInsets.all(16.0),
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('No')),
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('regNo')),
+              DataColumn(label: Text('Doc_requested')),
+            ],
+            rows: controller.completedRequests.map((request) {
+              return DataRow(cells: [
+                DataCell(Text(request.no)),
+                DataCell(Text(request.name)),
+                DataCell(Text(request.regNo)),
+                DataCell(Text(request.docRequested)),
+              ]);
+            }).toList(),
+          ),
+        ));
+  }
+
+  // Rejected Requests Table
+  Widget _buildRejectedRequestsTable() {
+    return Obx(() => Container(
+          color: const Color(0xFFE8F5E9),
+          padding: const EdgeInsets.all(16.0),
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Text('No')),
+              DataColumn(label: Text('Name')),
+              DataColumn(label: Text('regNo')),
+              DataColumn(label: Text('Doc_requested')),
+              DataColumn(
+                label: Text(
+                  'Review',
+                  style: TextStyle(color: Colors.green),
+                ),
+              ),
+            ],
+            rows: controller.rejectedRequests.map((request) {
+              return DataRow(cells: [
+                DataCell(Text(request.no)),
+                DataCell(Text(request.name)),
+                DataCell(Text(request.regNo)),
+                DataCell(Text(request.docRequested)),
+                DataCell(Text(
+                  request.review ?? '',
+                  style: const TextStyle(color: Colors.red),
+                )),
+              ]);
+            }).toList(),
+          ),
+        ));
+  }
+
+  // Show Reject Dialog
+  void _showRejectDialog(RequestModel request) {
+    final TextEditingController reviewController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Reject Request'),
+          content: TextField(
+            controller: reviewController,
+            decoration: const InputDecoration(
+              labelText: 'Enter reason for rejection',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                controller.rejectRequest(request, reviewController.text);
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+              ),
+              child: const Text('Submit'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
