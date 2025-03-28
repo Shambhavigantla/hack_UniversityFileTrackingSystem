@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/user_model.dart';
+import '../Responsiveness.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({Key? key}) : super(key: key);
@@ -17,91 +18,155 @@ class _AdminDashboardState extends State<AdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // Top Bar with Borderline
-          Container(
-            decoration: const BoxDecoration(
-              color: Color(0xFFE8F5E9), // Same color as sidebar
-              border: Border(
-                bottom: BorderSide(
-                  color: Color.fromARGB(255, 158, 158, 158), // Stroke line color
-                  width: 1.0, // Stroke line thickness
-                ),
-              ),
-            ),
-            child: AppBar(
-              title: const Text(
-                'Admin',
-                style: TextStyle(color: Colors.green), // Text color in green
-              ),
-              backgroundColor: Colors.transparent, // Transparent to show container color
-              elevation: 0, // Remove AppBar shadow
-              leading: IconButton(
-                icon: const Icon(Icons.menu, color: Colors.green), // Icon color in green
-                onPressed: () {
-                  setState(() {
-                    isSidebarOpen = !isSidebarOpen; // Toggle sidebar state
-                  });
-                },
-              ),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.notifications, color: Colors.green), // Icon color in green
-                  onPressed: () {
-                    // Handle notifications
-                  },
-                ),
-                const CircleAvatar(
-                  backgroundColor: Colors.green,
-                  child: Icon(Icons.person, color: Colors.white),
-                ),
-                const SizedBox(width: 16),
-              ],
-            ),
+      appBar: AppBar(
+        title: const Text(
+          'Admin',
+          style: TextStyle(color: Colors.green), // Text color in green
+        ),
+        backgroundColor: const Color(0xFFE8F5E9), // Same color as sidebar
+        elevation: 4.0, // Adds shadow under the AppBar
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.green), // Icon color in green
+          onPressed: () {
+            setState(() {
+              isSidebarOpen = !isSidebarOpen; // Toggle sidebar state
+            });
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications, color: Colors.green), // Icon color in green
+            onPressed: () {
+              // Handle notifications
+            },
           ),
-          // Main Content with Sidebar
-          Expanded(
-            child: Row(
-              children: [
-                // Sidebar
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  width: isSidebarOpen ? 200 : 0, // Adjust width dynamically
-                  color: const Color(0xFFE8F5E9),
-                  child: isSidebarOpen
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 16),
-                            _buildSidebarOption('Dashboard', Icons.dashboard),
-                            _buildSidebarOption('Requests', Icons.request_page),
-                            _buildSidebarOption('Department', Icons.apartment),
-                          ],
-                        )
-                      : null,
-                ),
-                // Main Content
-                Expanded(
-                  child: Container(
-                    color: Colors.white,
-                    child: Center(
-                      child: Text(
-                        _getContentForSelectedOption(),
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          const CircleAvatar(
+            backgroundColor: Colors.green,
+            child: Icon(Icons.person, color: Colors.white),
           ),
+          const SizedBox(width: 16),
         ],
       ),
+      body: Responsive(
+        mobile: _buildMobileLayout(),
+        tablet: _buildTabletLayout(),
+        desktop: _buildDesktopLayout(),
+      ),
+    );
+  }
+
+  // Mobile Layout
+  Widget _buildMobileLayout() {
+    return Stack(
+      children: [
+        // Main Content
+        Container(
+          color: Colors.white,
+          child: Center(
+            child: Text(
+              'Mobile View: $selectedOption',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        // Sidebar Overlay
+        if (isSidebarOpen)
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            child: Container(
+              width: 200,
+              color: const Color(0xFFE8F5E9),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  _buildSidebarOption('Dashboard', Icons.dashboard),
+                  _buildSidebarOption('Requests', Icons.request_page),
+                  _buildSidebarOption('Department', Icons.apartment),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.green),
+                    onPressed: () {
+                      setState(() {
+                        isSidebarOpen = false; // Close the sidebar
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  // Tablet Layout
+  Widget _buildTabletLayout() {
+    return Row(
+      children: [
+        // Sidebar
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          width: isSidebarOpen ? 150 : 0, // Adjust width dynamically
+          color: const Color(0xFFE8F5E9),
+          child: isSidebarOpen
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    _buildSidebarOption('Dashboard', Icons.dashboard),
+                    _buildSidebarOption('Requests', Icons.request_page),
+                    _buildSidebarOption('Department', Icons.apartment),
+                  ],
+                )
+              : null,
+        ),
+        // Main Content
+        Expanded(
+          child: Center(
+            child: Text(
+              'Tablet View: $selectedOption',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Desktop Layout
+  Widget _buildDesktopLayout() {
+    return Row(
+      children: [
+        // Sidebar
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          width: isSidebarOpen ? 200 : 0, // Adjust width dynamically
+          color: const Color(0xFFE8F5E9),
+          child: isSidebarOpen
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    _buildSidebarOption('Dashboard', Icons.dashboard),
+                    _buildSidebarOption('Requests', Icons.request_page),
+                    _buildSidebarOption('Department', Icons.apartment),
+                  ],
+                )
+              : null,
+        ),
+        // Main Content
+        Expanded(
+          child: Center(
+            child: Text(
+              'Desktop View: $selectedOption',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -111,6 +176,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
       onTap: () {
         setState(() {
           selectedOption = title; // Update selected option
+          if (Responsive.isMobile(context)) {
+            isSidebarOpen = false; // Close sidebar on mobile after selection
+          }
         });
       },
       child: Padding(
@@ -131,19 +199,5 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ),
       ),
     );
-  }
-
-  // Get Content for Selected Option
-  String _getContentForSelectedOption() {
-    switch (selectedOption) {
-      case 'Dashboard':
-        return 'Welcome to the Dashboard!';
-      case 'Requests':
-        return 'Here are the Requests!';
-      case 'Department':
-        return 'Department Information!';
-      default:
-        return 'Welcome to the Admin Dashboard!';
-    }
   }
 }
