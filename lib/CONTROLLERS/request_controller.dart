@@ -28,12 +28,17 @@ class RequestController extends GetxController {
   // Reject a request
   void rejectRequest(RequestModel request, String review) {
     currentRequests.remove(request);
-    rejectedRequests.add(RequestModel(
-      no: request.no,
-      name: request.name,
-      regNo: request.regNo,
-      docRequested: request.docRequested,
-      review: review,
-    ));
+    request.review = review;
+    rejectedRequests.add(request);
+  }
+
+  // Upload a document for a pending request
+  void uploadDocument(RequestModel request, String documentUrl) {
+    // Update the document URL for the request
+    request.documentUrl = documentUrl;
+
+    // Move the request to the completedRequests list
+    pendingRequests.remove(request);
+    completedRequests.add(request);
   }
 }
