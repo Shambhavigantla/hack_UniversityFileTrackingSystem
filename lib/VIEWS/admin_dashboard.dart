@@ -1,8 +1,11 @@
 // lib/views/admin_dashboard.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:vector/CONTROLLERS/dashboard_controller.dart';
 import 'package:vector/CONTROLLERS/request_controller.dart';
+import 'package:vector/CONTROLLERS/course_controller.dart';
 import 'package:vector/MODELS/request_model.dart';
+import 'package:vector/MODELS/student_model.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({Key? key}) : super(key: key);
@@ -12,19 +15,26 @@ class AdminDashboard extends StatefulWidget {
 }
 
 class _AdminDashboardState extends State<AdminDashboard> {
-  final RequestController controller = Get.put(RequestController());
+  final DashboardController dashboardController = Get.put(DashboardController());
+  final RequestController requestController = Get.put(RequestController());
+  final CourseController courseController = Get.put(CourseController());
   bool isSidebarOpen = true; // Controls the sidebar state
   String selectedOption = 'Dashboard'; // Tracks the selected option
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false, // Removes the back arrow
         title: Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.menu, color: Colors.green),
+              icon: Icon(
+                isSidebarOpen ? Icons.menu_open : Icons.menu,
+                color: Colors.green,
+              ),
               onPressed: () {
                 setState(() {
                   isSidebarOpen = !isSidebarOpen; // Toggle sidebar state
@@ -75,14 +85,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
           // Main Content
           Expanded(
-            child: selectedOption == 'Requests'
-                ? _buildRequestsPage()
-                : Center(
-                    child: Text(
-                      '$selectedOption Page',
-                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                  ),
+            child: selectedOption == 'Dashboard'
+                ? _buildDashboardPage(screenWidth)
+                : selectedOption == 'Requests'
+                    ? _buildRequestsPage()
+                    : _buildDepartmentPage(screenWidth),
           ),
         ],
       ),
@@ -91,26 +98,224 @@ class _AdminDashboardState extends State<AdminDashboard> {
 
   // Sidebar Option Widget
   Widget _buildSidebarOption(String title, IconData icon) {
-    return InkWell(
+    return ListTile(
+      leading: Icon(icon, color: Colors.green),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.green,
+        ),
+      ),
       onTap: () {
         setState(() {
           selectedOption = title; // Update selected option
         });
+        if (MediaQuery.of(context).size.width < 600) Navigator.pop(context); // Close drawer on mobile
       },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-        child: Row(
+    );
+  }
+
+  // Dashboard Page
+  Widget _buildDashboardPage(double screenWidth) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Dashboard Stats
+          Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            children: [
+              _buildDashboardStat("Total Courses", dashboardController.totalCourses.value, screenWidth),
+              _buildDashboardStat("Total Students", dashboardController.totalStudents.value, screenWidth),
+              _buildDashboardStat("Pending Requests", dashboardController.pendingRequests.value, screenWidth),
+              _buildDashboardStat("Documents Awaiting Pickup", dashboardController.documentsAwaitingPickup.value, screenWidth),
+            ],
+          ),
+          const SizedBox(height: 32),
+          // Recent Activity
+          const Text(
+            "RECENT ACTIVITY",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
+          ),
+          const SizedBox(height: 16),
+          Expanded(
+            child: Obx(() {
+              return ListView.builder(
+                itemCount: dashboardController.recentActivity.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(
+                      dashboardController.recentActivity[index],
+                      style: const TextStyle(color: Colors.green),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Dashboard Stat Widget
+  Widget _buildDashboardStat(String title, int value, double screenWidth) {
+    return SizedBox(
+      width: screenWidth < 600 ? double.infinity : 200, // Full width on mobile
+      child: Card(
+        color: const Color(0xFFE8F5E9),
+        elevation: 4,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Text(
+                title,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                value.toString(),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Department Page
+  Widget _buildDepartmentPage(double screenWidth) {
+    return Obx(() {
+      final selectedCourse = courseController.selectedCourse.value;
+      final students = courseController.studentsForSelectedCourse;
+
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: Colors.green),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
+            GestureDetector(
+              onTap: () {
+                courseController.selectedCourse.value = ""; // Reset selected course
+              },
+              child: const Text(
+                "COURSES",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green),
               ),
             ),
+            const SizedBox(height: 16),
+            if (selectedCourse.isEmpty)
+              Expanded(
+                child: GridView.count(
+                  crossAxisCount: screenWidth < 600 ? 2 : 3, // Adjust grid columns for mobile
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  children: [
+                    _buildCourseCategory("PG COURSES", courseController.pgCourses),
+                    _buildCourseCategory("UNDERGRADUATE", courseController.ugCourses),
+                    _buildCourseCategory("INTEGRATED", courseController.integratedCourses),
+                  ],
+                ),
+              )
+            else
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Selected course title
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        "Students in $selectedCourse",
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ),
+                    // List of students
+                    Expanded(
+                      child: students.isEmpty
+                          ? const Center(
+                              child: Text(
+                                "No students in this course.",
+                                style: TextStyle(color: Colors.green),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: students.length,
+                              itemBuilder: (context, index) {
+                                final student = students[index];
+                                return Card(
+                                  margin: const EdgeInsets.symmetric(
+                                      horizontal: 16.0, vertical: 8.0),
+                                  child: ListTile(
+                                    title: Text(
+                                      student.name,
+                                      style: const TextStyle(color: Colors.green),
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text("Reg No: ${student.regNo}", style: const TextStyle(color: Colors.green)),
+                                        Text("Status: ${student.status}", style: const TextStyle(color: Colors.green)),
+                                        const SizedBox(height: 8.0),
+                                        const Text(
+                                          "Application History:",
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                                        ),
+                                        ...student.applicationHistory
+                                            .map((history) => Text("- $history", style: const TextStyle(color: Colors.green)))
+                                            .toList(),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      );
+    });
+  }
+
+  // Course Category Widget
+  Widget _buildCourseCategory(String title, List<String> courses) {
+    return Card(
+      color: const Color(0xFFE8F5E9),
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.green),
+            ),
+            const SizedBox(height: 8),
+            ...courses.map((course) {
+              return InkWell(
+                onTap: () {
+                  courseController.selectedCourse.value = course;
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text("- $course", style: const TextStyle(color: Colors.green)),
+                ),
+              );
+            }).toList(),
           ],
         ),
       ),
@@ -165,7 +370,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               DataColumn(label: Text('Doc_requested')),
               DataColumn(label: Text('Status')),
             ],
-            rows: controller.currentRequests.map((request) {
+            rows: requestController.currentRequests.map((request) {
               return DataRow(cells: [
                 DataCell(Text(request.no)),
                 DataCell(Text(request.name)),
@@ -175,7 +380,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        controller.acceptRequest(request);
+                        requestController.acceptRequest(request);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
@@ -212,7 +417,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               DataColumn(label: Text('regNo')),
               DataColumn(label: Text('Doc_requested')),
             ],
-            rows: controller.pendingRequests.map((request) {
+            rows: requestController.pendingRequests.map((request) {
               return DataRow(cells: [
                 DataCell(Text(request.no)),
                 DataCell(Text(request.name)),
@@ -236,7 +441,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               DataColumn(label: Text('regNo')),
               DataColumn(label: Text('Doc_requested')),
             ],
-            rows: controller.completedRequests.map((request) {
+            rows: requestController.completedRequests.map((request) {
               return DataRow(cells: [
                 DataCell(Text(request.no)),
                 DataCell(Text(request.name)),
@@ -266,7 +471,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 ),
               ),
             ],
-            rows: controller.rejectedRequests.map((request) {
+            rows: requestController.rejectedRequests.map((request) {
               return DataRow(cells: [
                 DataCell(Text(request.no)),
                 DataCell(Text(request.name)),
@@ -305,7 +510,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             ElevatedButton(
               onPressed: () {
-                controller.rejectRequest(request, reviewController.text);
+                requestController.rejectRequest(request, reviewController.text);
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
