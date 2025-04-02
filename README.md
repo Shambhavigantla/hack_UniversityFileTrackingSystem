@@ -1,14 +1,33 @@
-# Flutter Project
+
+
+
+## FULL-STACK Flutter Project - University File tracking System
 
 ## Overview
 
-This project is a cross-platform application built using the Flutter framework. It supports web, Android, and iOS platforms. The application leverages various packages to enhance its functionality and user interface.
+- A **Full-Stack Flutter-based web/mobile application** to streamline document request workflows between students and university administrators.
+
+- Built with **FOSS tools**, ensuring transparency and cost-effectiveness. 
+
+- **Real-Time** retrieval of data from **backend** (Not HardCoded)
+
+- Different **Admins** can access and verify at each level. 
+
+- It supports **web, Android, and iOS platforms**. 
+
+- User friendly interface **responsiveness** for mobile, tablet and desktop screen-sizes.
 
 ## Tools Used
 
-- **Framework:** Flutter (supports web, Android, and iOS applications)
-- **IDE:** VSCodium
-- **Design & Prototyping Tools:** penpot (Open source design tool)
+| Category       | FOSS Tools                 | 
+|----------------|----------------------------|
+| Frontend       | Flutter,                   | 
+| Backend        | Node.js                    | 
+| Database       | Firestore (Free Tier)      |
+| Design         | Penpot                     | 
+| Version Control| GitLab                     | 
+| IDE            | VSCodium                   | 
+| PPT            | LibreOffice                |
 
 ## Packages Used
 
@@ -23,6 +42,14 @@ This project is a cross-platform application built using the Flutter framework. 
 
 - Flutter SDK
 - An IDE (e.g., VSCodium)
+- Firebase
+
+## Code Structure(MVC)
+
+    
+      lib/-->model/          # Data classes (e.g., `request.dart`)
+          -->view/           # UI screens (e.g., `student_dashboard.dart`)
+          -->controller/     # Dart logic (e.g., `request_controller.dart`)
 
 ## Setup Instructions
 
@@ -31,7 +58,7 @@ This project is a cross-platform application built using the Flutter framework. 
    - Run the command: `flutter create your_project_name`
 
 2. **Add the Library:**
-   - Copy the `lib` folder from this repository into your created project.
+   - Copy the `lib` folder from this repository into your created project lib folder.
 
 3. **Add Required Packages:**
    - Open `pubspec.yaml` in your project.
@@ -57,11 +84,5 @@ This project is a cross-platform application built using the Flutter framework. 
 
 4. **Run the Application:**
    - Use the command: `flutter run -d chrome` to run the application in a web browser.
+   - Use the command: `flutter run -d android` to run the application in a mobile.
 
-
-
-## Media
-
-### Screenshots
-
-### Video
