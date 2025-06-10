@@ -1,6 +1,3 @@
-
-
-
 ## FULL-STACK Flutter Project - University File tracking System
 
 ## Overview
@@ -28,6 +25,7 @@
 | Version Control| GitLab                     | 
 | IDE            | VSCodium                   | 
 | PPT            | LibreOffice                |
+|AI-Tool         | CodeGeex (OpenSource)      |
 
 ## Packages Used
 
@@ -86,3 +84,21 @@
    - Use the command: `flutter run -d chrome` to run the application in a web browser.
    - Use the command: `flutter run -d android` to run the application in a mobile.
 
+
+## Media
+
+### Screenshots
+`Go to Screenshots folder in the repository TO view the folLowing screenshots`
+
+[SignIn_Dashboard]
+
+[Student Dashboard]
+
+[Admin Dashboard]
+
+[Real time Tracking]
+
+### Video
+`View the Demo_Video in the repository`
+
+ [Demo Video of the application]
