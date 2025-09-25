@@ -1,4 +1,4 @@
-## FULL-STACK Flutter Project - University File tracking System
+## FULL-STACK Flutter Project - University File tracking System. 
 
 ## Overview
 
