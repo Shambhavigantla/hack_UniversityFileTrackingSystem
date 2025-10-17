@@ -1,6 +1,6 @@
-## FULL-STACK Flutter Project - University File tracking System. 
+## FULL-STACK Flutter Project - University File Tracking System. 
 
-## Overview
+## Overview 
 
 - A **Full-Stack Flutter-based web/mobile application** to streamline document request workflows between students and university administrators.
 
@@ -12,7 +12,7 @@
 
 - It supports **web, Android, and iOS platforms**. 
 
-- User friendly interface **responsiveness** for mobile, tablet and desktop screen-sizes.
+- User-friendly interface **responsiveness** for mobile, tablet and desktop screen sizes.
 
 ## Tools Used
 
